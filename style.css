@@ -72,7 +72,6 @@ header {
 .main-banner {
     position: relative;
     height: 300px;
-    background: url('https://potterheaven.com/ph/wp-content/uploads/2010/01/up_destaque-e1263699158381.jpg');
     display: flex;
     align-items: flex-end;
     padding: 20px;
@@ -86,7 +85,7 @@ header {
     z-index: 2;
 }
 
-/* --- Barra de Pesquisa (Geral) --- */
+
 .search-bar-container {
     display: flex;
     background-color: var(--search-input-bg);
@@ -98,7 +97,10 @@ header {
 
 .top-search {
     background-color: var(--search-bg);
-    /* Fundo escuro na tela de pesquisa */
+}
+
+search-button-home {
+    width: 20px;
 }
 
 .search-bar-container input {
@@ -115,7 +117,7 @@ header {
     color: var(--text-light);
 }
 
-.search-bar-container button svg {
+.search-icon {
     width: 18px;
     height: 18px;
     fill: #666;

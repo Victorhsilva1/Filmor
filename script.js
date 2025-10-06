@@ -1,40 +1,44 @@
 const CHAVE_API_OMDB = '460719d3'; 
 const URL_API_OMDB = `https://www.omdbapi.com/?apikey=${CHAVE_API_OMDB}&`;
 
-// Elementos DOM das Telas
+// Função utilitária para obter elementos por ID
+const pegarId = (id) => document.getElementById(id);
+
+// Elementos DOM
 const telas = {
-    home: document.getElementById('desktop-home'),
-    search: document.getElementById('desktop-search'),
-    details: document.getElementById('desktop-details'),
+    home: pegarId('desktop-home'),
+    search: pegarId('desktop-search'),
+    details: pegarId('desktop-details'),
 };
-const BuscaHome = document.getElementById('search-input-home');
-const listaPopulares = document.getElementById('tv-shows-list');
-const BuscaTopo = document.getElementById('search-input-top');
-const termoBuscaExibido = document.getElementById('search-term-display');
-const gradeResultados = document.getElementById('movie-results-grid');
-const detalhes = {
-    poster: document.getElementById('details-poster'),
-    titulo: document.getElementById('details-title'),
-    nota: document.getElementById('details-rating-value'),
-    enredo: document.getElementById('details-plot'),
-    generos: document.getElementById('details-genres'),
-    containerTrailer: document.getElementById('details-trailer-container'),
+const inputBuscaHome = pegarId('search-input-home');
+const inputBuscaTopo = pegarId('search-input-top');
+const listaPopulares = pegarId('tv-shows-list');
+const gradeResultados = pegarId('movie-results-grid');
+const termoBuscaExibido = pegarId('search-term-display');
+
+const elementosDetalhe = {
+    poster: pegarId('details-poster'),
+    titulo: pegarId('details-title'),
+    nota: pegarId('details-rating-value'),
+    enredo: pegarId('details-plot'),
+    generos: pegarId('details-genres'),
+    containerTrailer: pegarId('details-trailer-container'),
 };
+
 const botoesVoltar = {
-    search: document.getElementById('back-button-search'),
-    details: document.getElementById('back-button-details'),
+    busca: pegarId('back-button-search'),
+    detalhes: pegarId('back-button-details'),
 };
 
 let telaAnterior = 'home'; 
 
-// --- 1. FUNÇÕES DE NAVEGAÇÃO E REQUISIÇÃO ---
+// --- 1. NAVEGAÇÃO E API ---
 
 function trocarTela(novaTela) {
     const ativa = document.querySelector('.active-desktop');
     
-    // Esconde a tela atual
+    // Esconde a tela atual, salvando-a para o botão Voltar
     if (ativa) {
-        // Salva a tela atual para o botão Voltar
         telaAnterior = ativa.id.replace('desktop-', '');
         ativa.classList.remove('active-desktop');
     }
@@ -45,9 +49,10 @@ function trocarTela(novaTela) {
 
 async function buscarDados(params, tipo = 'search') {
     let url = URL_API_OMDB;
+    
+    // Constrói a URL para busca (s) ou detalhes (i)
     if (tipo === 'search') {
         url += `s=${encodeURIComponent(params.query)}`;
-        if (params.mediaType) url += `&type=${params.mediaType}`;
     } else { 
         url += `i=${encodeURIComponent(params.imdbID)}&plot=full`;
     }
@@ -55,22 +60,24 @@ async function buscarDados(params, tipo = 'search') {
     try {
         const resposta = await fetch(url);
         const dados = await resposta.json();
-        return dados.Response === 'True' ? (tipo === 'search' ? dados.Search : dados) : null;
+        const sucesso = dados.Response === 'True';
+        
+        return sucesso ? (tipo === 'search' ? dados.Search : dados) : null;
     } catch (error) {
-        console.error('Erro na Busca:', error);
         return null;
     }
 }
 
-// --- 2. FUNÇÕES DE RENDERIZAÇÃO ---
+// --- 2. RENDERIZAÇÃO ---
 
 function criarCardFilme(item) {
     const card = document.createElement('div');
     card.classList.add('movie-card');
+    
     const urlPoster = item.Poster !== 'N/A' ? item.Poster : 'https://via.placeholder.com/150x230?text=Poster+N/A'; 
     card.innerHTML = `<img src="${urlPoster}" alt="${item.Title} Poster">`;
-    // Passa o ID para carregar os detalhes
-    card.addEventListener('click', () => carregarDetalhesFilme(item.imdbID, item.Title));
+    
+    card.addEventListener('click', () => carregarDetalhesFilme(item.imdbID));
     return card;
 }
 
@@ -79,28 +86,18 @@ async function carregarPopulares() {
     listaPopulares.innerHTML = '';
     
     if (!resultados) return;
-    
-    // Garante 16 resultados repetindo a lista (lógica simplificada)
-    const listaFinal = [];
-    let indiceResultado = 0;
-    
-    while (listaFinal.length < 16) {
-        const item = resultados[indiceResultado];
-        listaFinal.push(item);
-        // Volta ao início da lista quando chega ao fim
-        indiceResultado = (indiceResultado + 1) % resultados.length;
-    }
 
-    listaFinal.forEach(item => { 
-        listaPopulares.appendChild(criarCardFilme(item));
-    });
+    // Garante 16 itens, repetindo a lista se o resultado da API for menor
+    const listaFinal = Array(15).fill(null).map((_, i) => resultados[i % resultados.length]);
+
+    listaFinal.forEach(item => listaPopulares.appendChild(criarCardFilme(item)));
 }
 
 async function executarBusca(termo) {
     if (!termo) return;
 
     trocarTela('search');
-    BuscaTopo.value = termo;
+    inputBuscaTopo.value = termo;
     termoBuscaExibido.textContent = termo;
     gradeResultados.innerHTML = '<div>Carregando resultados...</div>';
 
@@ -108,6 +105,7 @@ async function executarBusca(termo) {
 
     gradeResultados.innerHTML = '';
     if (resultados && resultados.length > 0) {
+        // Limita a 12 resultados para o layout
         resultados.slice(0, 12).forEach(item => gradeResultados.appendChild(criarCardFilme(item)));
     } else {
         gradeResultados.innerHTML = `<div>Nenhum resultado encontrado para '${termo}'.</div>`;
@@ -117,56 +115,59 @@ async function executarBusca(termo) {
 async function carregarDetalhesFilme(imdbID) {
     trocarTela('details');
     
-    // Estado de Carregamento
-    detalhes.titulo.textContent = 'Carregando...';
-    detalhes.enredo.textContent = 'Buscando detalhes...';
-    detalhes.containerTrailer.innerHTML = '<div>Trailer indisponível.</div>'; 
+    // Estado de Carregamento inicial
+    elementosDetalhe.titulo.textContent = 'Carregando...';
+    elementosDetalhe.enredo.textContent = 'Buscando detalhes...';
+    elementosDetalhe.containerTrailer.innerHTML = '<div>Trailer indisponível.</div>'; 
 
-    const detalhes = await buscarDados({ imdbID }, 'details');
+    const dadosFilme = await buscarDados({ imdbID }, 'details');
 
-    if (detalhes) {
-        detalhes.titulo.textContent = detalhes.Title;
-        detalhes.enredo.textContent = detalhes.Plot;
-        detalhes.nota.textContent = detalhes.imdbRating;
+    if (dadosFilme) {
+        elementosDetalhe.titulo.textContent = dadosFilme.Title;
+        elementosDetalhe.enredo.textContent = dadosFilme.Plot;
+        elementosDetalhe.nota.textContent = dadosFilme.imdbRating;
         
-        const urlPoster = detalhes.Poster !== 'N/A' ? detalhes.Poster : 'https://via.placeholder.com/150x230?text=Poster+N/A';
-        detalhes.poster.innerHTML = `<img src="${urlPoster}" alt="${detalhes.Title} Poster">`;
+        // Poster
+        const urlPoster = dadosFilme.Poster !== 'N/A' ? dadosFilme.Poster : 'https://via.placeholder.com/150x230?text=Poster+N/A';
+        elementosDetalhe.poster.innerHTML = `<img src="${urlPoster}" alt="${dadosFilme.Title} Poster">`;
         
-        detalhes.generos.innerHTML = '';
-        if (detalhes.Genre !== 'N/A') {
-            detalhes.Genre.split(', ').forEach(genero => {
+        // Gêneros (Tags)
+        elementosDetalhe.generos.innerHTML = '';
+        if (dadosFilme.Genre && dadosFilme.Genre !== 'N/A') {
+            dadosFilme.Genre.split(', ').forEach(genero => {
                 const tag = document.createElement('span');
                 tag.classList.add('genre-tag');
-                tag.textContent = genero;
-                detalhes.generos.appendChild(tag);
+                tag.textContent = genero.trim();
+                elementosDetalhe.generos.appendChild(tag);
             });
         }
     } else {
-        detalhes.titulo.textContent = 'Filme Não Encontrado';
+        elementosDetalhe.titulo.textContent = 'Filme Não Encontrado';
+        elementosDetalhe.enredo.textContent = 'Não foi possível carregar os detalhes.';
     }
 }
 
-// --- 3. INICIALIZAÇÃO E LISTENERS ---
+// --- 3. INICIALIZAÇÃO E EVENTOS ---
 
-function configurarListenerBusca(elementoInput, idBotao) {
-    const botao = document.getElementById(idBotao);
-    const manipulador = () => executarBusca(elementoInput.value.trim() || 'Batman');
+function configurarBusca(elementoInput, idBotao) {
+    const botao = pegarId(idBotao);
+    const manipulador = () => executarBusca(elementoInput.value.trim() || 'Batman'); 
+    
     botao.addEventListener('click', manipulador);
     elementoInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') manipulador();
-    });
+    });     
 }
 
-// Quando o HTML estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
     carregarPopulares();
     trocarTela('home');
     
     // Configura listeners de busca
-    configurarListenerBusca(BuscaHome, 'search-button-home');
-    configurarListenerBusca(BuscaTopo, 'search-button-top');
+    configurarBusca(inputBuscaHome, 'search-button-home');
+    configurarBusca(inputBuscaTopo, 'search-button-top');
 
     // Configura botões de voltar
-    botoesVoltar.search.addEventListener('click', () => trocarTela('home'));
-    botoesVoltar.details.addEventListener('click', () => trocarTela(telaAnterior));
+    botoesVoltar.busca.addEventListener('click', () => trocarTela('home'));
+    botoesVoltar.detalhes.addEventListener('click', () => trocarTela(telaAnterior));
 });
