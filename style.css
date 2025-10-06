@@ -1,0 +1,264 @@
+/* Variáveis e Reset Básico */
+:root {
+    --bg-dark: #222;
+    --bg-body: #121212;
+    --text-light: #ffffff;
+    --logo-color: #ff3333;
+    --search-bg: #444444; 
+    --card-bg: #1c1c1c;
+    --title-bg-active: #0088cc;
+    --genre-tag-bg: #333333;
+    --search-input-bg: #fff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-light);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+/* Estrutura de Telas (Desktop) */
+.desktop {
+    width: 450px; /* Largura para simular o formato vertical */
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    padding: 20px;
+    display: none; /* Esconde todas por padrão */
+    position: relative;
+    /* Estilos para Desktop-7 e Desktop-8 que aparecem ao lado/substituem */
+    margin: 0 20px; 
+}
+
+#app-container {
+    display: flex;
+    /* Ajusta para que as telas apareçam lado a lado na visão do designer */
+    /* Na aplicação real, apenas uma estaria visível com absolute/display:none */
+}
+
+.desktop.active-desktop {
+    display: block; 
+}
+
+/* --- Cabeçalho --- */
+header {
+    position: relative;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    color: var(--logo-color);
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+/* --- Banner (Desktop - 4) --- */
+.main-banner {
+    position: relative;
+    height: 300px;
+    width: calc(100% + 40px);
+    margin: -20px 0 30px -20px; /* Ajusta para preencher a largura */
+    background: url('https://upload.wikimedia.org/wikipedia/en/thumb/5/52/Up_%282009_film%29_poster.jpg/220px-Up_%282009_film%29_poster.jpg') center center/cover no-repeat;
+    display: flex;
+    align-items: flex-end;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.main-banner .overlay {
+    /* ... (Estilo do gradiente) ... */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(34, 34, 34, 1) 0%, rgba(34, 34, 34, 0.5) 40%, rgba(34, 34, 34, 0) 100%);
+    z-index: 1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* --- Barra de Pesquisa (Geral) --- */
+.search-bar-container {
+    display: flex;
+    background-color: var(--search-input-bg);
+    border-radius: 4px;
+    padding: 8px 10px;
+    width: 100%;
+    margin-bottom: 30px;
+}
+.top-search {
+    background-color: var(--search-bg); /* Fundo escuro na tela de pesquisa */
+}
+
+.search-bar-container input {
+    flex-grow: 1;
+    background: none;
+    border: none;
+    color: #333; 
+    font-size: 14px;
+    padding: 0 10px;
+    outline: none;
+}
+.top-search input {
+    color: var(--text-light); 
+}
+
+.search-bar-container button svg {
+    width: 18px;
+    height: 18px;
+    fill: #666; 
+}
+.top-search button svg {
+    fill: var(--text-light); 
+}
+
+/* --- Grid de Filmes --- */
+.popular-shows {
+    padding-top: 10px;
+}
+
+.section-title-label {
+    background-color: var(--title-bg-active);
+    color: var(--text-light);
+    font-size: 14px;
+    font-weight: bold;
+    padding: 4px 10px;
+    display: inline-block;
+    border-radius: 3px;
+    margin-bottom: 20px;
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas para Home */
+    gap: 10px;
+}
+.search-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas para Pesquisa */
+}
+
+.movie-card {
+    background-color: var(--card-bg);
+    border-radius: 4px;
+    overflow: hidden;
+    height: 150px; 
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.movie-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* --- Detalhes do Filme (Desktop - 8) --- */
+
+.movie-details-header {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.details-poster {
+    width: 150px;
+    height: 230px;
+    background-color: var(--card-bg);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.4); 
+}
+
+.details-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.details-content {
+    flex-grow: 1;
+}
+
+#details-title {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.imdb-rating {
+    font-size: 14px;
+    color: #ffd700;
+    margin-bottom: 20px;
+}
+
+#details-plot {
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.details-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.genre-tag {
+    background-color: var(--genre-tag-bg);
+    color: var(--text-light);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Seção do Trailer */
+.trailer-section h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.trailer-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* Relação de aspecto 16:9 */
+    background-color: black;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.trailer-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}

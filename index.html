@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmora Clone - Layout Completo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="app-container">
+
+        <div id="desktop-home" class="desktop active-desktop">
+            <header>
+                <span class="logo">FILMOR</span>
+            </header>
+            
+            <section class="main-banner">
+                <div class="banner-content">
+                    <h1>UP Altas Aventuras</h1>
+                    <div class="rating-stars">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="overlay"></div>
+            </section>
+
+            <div class="search-bar-container">
+                <input type="text" id="search-input-home" placeholder="Pesquise algum filme">
+                <button id="search-button-home">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.1-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+                </button>
+            </div>
+
+            <section class="popular-shows">
+                <h2 class="section-title-label">Popular TV Shows</h2>
+                <div id="tv-shows-list" class="movie-grid">
+                    </div>
+            </section>
+        </div>
+
+        <div id="desktop-search" class="desktop">
+            <header>
+                <span class="logo">FILMOR</span>
+                <button id="back-button-search" class="back-button">←</button>
+            </header>
+
+            <div class="search-bar-container top-search">
+                <input type="text" id="search-input-top" placeholder="BATMAN">
+                <button id="search-button-top">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.1-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+                </button>
+            </div>
+
+            <section class="search-results">
+                <h3>Todas as pesquisas com: '<span id="search-term-display"></span>'</h3>
+                <div id="movie-results-grid" class="movie-grid search-grid">
+                    </div>
+            </section>
+        </div>
+        
+        <div id="desktop-details" class="desktop">
+            <header>
+                <span class="logo">FILMOR</span>
+                <button id="back-button-details" class="back-button">←</button>
+            </header>
+
+            <section class="movie-details-header">
+                <div id="details-poster" class="details-poster"></div>
+                <div class="details-content">
+                    <h1 id="details-title"></h1>
+                    <div class="imdb-rating">
+                        IMDB Rating <span id="details-rating-value">N/A</span>
+                    </div>
+                    <p id="details-plot"></p>
+                    <div id="details-genres" class="details-genres"></div>
+                </div>
+            </section>
+            
+            <section class="trailer-section">
+                <h2>Trailer</h2>
+                <div id="details-trailer-container" class="trailer-container"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
